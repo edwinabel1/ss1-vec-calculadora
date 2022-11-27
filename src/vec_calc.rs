@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, hash::Hash, iter::Sum};
 
 pub fn vec_calc_get_promedio(v: &[i32]) -> f32 {
     let n: i32 = v.iter().sum();
@@ -18,15 +18,14 @@ pub fn vec_calc_get_mediana(v: &[i32]) -> f32 {
     }
 }
 
-pub fn vec_calc_get_modo(v: &[i32]) -> i32 {
+pub fn vec_calc_get_modo<T: Sum + Clone + Eq + Hash + Copy>(v: &[T]) -> T {
     let mut modos = HashMap::new();
-    //v.iter().for_each(|a| *(modos.entry(*a).or_insert(0)) += 1);
-    v.iter().for_each(|a| {
-        modos.entry(*a).and_modify(|e| *e += 1).or_insert(1);
+    v.iter().cloned().for_each(|a| {
+        modos.entry(a).and_modify(|e| *e += 1).or_insert(1);
     });
 
     let mut max_value = 0;
-    let mut modo: Option<(&i32, &i32)> = None;
+    let mut modo: Option<(&T, &i32)> = None;
     modos.iter().for_each(|(key, value)| {
         if *value > max_value {
             max_value = *value;
